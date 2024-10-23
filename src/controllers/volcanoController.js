@@ -4,9 +4,27 @@ import { getErrorMsg } from "../utils/errorUtil.js";
 
 const router = Router();
 
+/* ############################
+########### CATALOG
+############################# */
+router.get('/catalog', async (req, res) => {
+   const volcanoes = await volcanoService.getAll().lean();
+   res.render("volcano/catalog", { title: "Catalog Page", volcanoes });
+})
+
+
+
+/* ############################
+########### CREATE
+############################# */
+
 router.get("/create", (req, res) => {
-  res.render("volcano/create", { title: "Edit Page" });
+
+   const volcanoDataType = getVolcanoTypeViewData({});
+  res.render("volcano/create", { title: "Edit Page", volcanoDataType });
 });
+
+
 
 router.post("/create", async (req, res) => {
   const volcanoData = req.body;
@@ -15,7 +33,7 @@ router.post("/create", async (req, res) => {
   try {
     await volcanoService.create(volcanoData, userId);
 
-    res.redirect("/volcano");
+    res.redirect("/volcano/catalog");
   } catch (err) {
     const error = getErrorMsg(err);
     const volcanoDataType = getVolcanoTypeViewData(volcanoData);
@@ -28,6 +46,18 @@ router.post("/create", async (req, res) => {
   }
 });
 
+/* ############################
+########### DETAILs
+############################# */
+
+router.get('/:volcanoId/details',async (req, res) => {
+   const volcanoId = req.params.volcanoId;
+
+   const volcano = await volcanoService.getOne(volcanoId).lean();
+   res.render('volcano/details', {title: "Details Page", volcano});
+});
+
+// FIXME: This is function for options and. 
 function getVolcanoTypeViewData({ typeVolcano }) {
   const volcanoTypes = [
     "Supervolcanoes",
