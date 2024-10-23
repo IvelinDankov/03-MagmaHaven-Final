@@ -3,6 +3,7 @@ import router from "./routes.js";
 import handlebars from 'express-handlebars';
 import mongoose from "mongoose";
 import cookieParser from 'cookie-parser';
+import { authMiddleware } from "./middlewares/authMiddleware.js";
 
 const app = express();
 /* Set Up */
@@ -25,6 +26,7 @@ app.use(express.urlencoded({extended: false}))
 
 /* cookie parser */
 app.use(cookieParser());
+app.use(authMiddleware);
 app.use(router)
 
 app.listen(3000, () => console.log('Server is listening on port 3000'));

@@ -14,14 +14,47 @@ router.post("/register", async (req, res) => {
   const { username, email, password, rePass } = req.body;
 
   try {
-    await authService.register(username, email, password, rePass);
-    res.redirect("/auth/login");
+    const token = await authService.register(username, email, password, rePass);
+
+    res.cookie("auth", token, {httpOnly: true});
+    res.redirect("/");
   } catch (err) {
     console.log(err.message);
 
     // TODO: Error
     res.render("auth/register", { tittle: "Register Page", username, email });
   }
+});
+
+/* ######################
+LOGIN
+######################### */
+
+router.get("/login", (req, res) => {
+  res.render("auth/login", { title: "Login Page" });
+});
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const token = await authService.login(email, password);
+
+    res.cookie("auth", token, {httpOnly: true});
+
+    res.redirect("/");
+  } catch (err) {
+    //   TODO: send error message
+    res.render("auth/login", { title: "Login Page", email });
+  }
+});
+
+/* ######################
+LOGOUT
+######################### */
+
+router.get('/logout', (req, res) => {
+    res.clearCookie('auth');
+    res.redirect('/');
 });
 
 export default router;
