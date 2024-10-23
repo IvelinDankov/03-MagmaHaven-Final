@@ -1,7 +1,6 @@
 import express from "express";
 import router from "./routes.js";
 import handlebars from 'express-handlebars';
-import mongodb from 'mongoose';
 import mongoose from "mongoose";
 
 const app = express();

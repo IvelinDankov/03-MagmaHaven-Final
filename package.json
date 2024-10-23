@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "Exam Prep",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "docenv": "^2.0.6",
     "express": "^4.21.1",
     "express-handlebars": "^8.0.1",
