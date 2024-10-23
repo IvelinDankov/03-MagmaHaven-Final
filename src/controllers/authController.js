@@ -1,5 +1,6 @@
 import { Router } from "express";
 import authService from "../services/authService.js";
+import { getErrorMsg } from "../utils/errorUtil.js";
 
 const router = Router();
 
@@ -16,13 +17,16 @@ router.post("/register", async (req, res) => {
   try {
     const token = await authService.register(username, email, password, rePass);
 
-    res.cookie("auth", token, {httpOnly: true});
+    res.cookie("auth", token, { httpOnly: true });
     res.redirect("/");
   } catch (err) {
-    console.log(err.message);
-
-    // TODO: Error
-    res.render("auth/register", { tittle: "Register Page", username, email });
+    const error = getErrorMsg(err);
+    res.render("auth/register", {
+      tittle: "Register Page",
+      username,
+      email,
+      error,
+    });
   }
 });
 
@@ -39,12 +43,12 @@ router.post("/login", async (req, res) => {
   try {
     const token = await authService.login(email, password);
 
-    res.cookie("auth", token, {httpOnly: true});
+    res.cookie("auth", token, { httpOnly: true });
 
     res.redirect("/");
   } catch (err) {
-    //   TODO: send error message
-    res.render("auth/login", { title: "Login Page", email });
+     const error = getErrorMsg(err);
+    res.render("auth/login", { title: "Login Page", email, error });
   }
 });
 
@@ -52,9 +56,9 @@ router.post("/login", async (req, res) => {
 LOGOUT
 ######################### */
 
-router.get('/logout', (req, res) => {
-    res.clearCookie('auth');
-    res.redirect('/');
+router.get("/logout", (req, res) => {
+  res.clearCookie("auth");
+  res.redirect("/");
 });
 
 export default router;

@@ -6,15 +6,15 @@ const salt = 10;
 const userSchema = new Schema({
   username: {
     type: String,
-    required: true,
+    required: [true, "Username is required!"]
   },
   email: {
     type: String,
-    required: true,
+    required: [true, "Email is required!"]
   },
   password: {
     type: String,
-    required: true,
+    required: [true, "Password is required!"]
   },
 });
 
