@@ -1,0 +1,22 @@
+{
+  "name": "Exam Prep",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "dev": "nodemon ./src/index.js"
+  },
+  "keywords": [],
+  "author": "VD",
+  "license": "ISC",
+  "description": "Exam Prep",
+  "dependencies": {
+    "docenv": "^2.0.6",
+    "express": "^4.21.1",
+    "express-handlebars": "^8.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
