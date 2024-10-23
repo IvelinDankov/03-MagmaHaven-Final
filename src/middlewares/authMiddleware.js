@@ -14,20 +14,21 @@ export function authMiddleware(req, res, next) {
 
     req.user = decodedToken;
     req.isAuthenticated = true;
+    res.locals.user = decodedToken;
+    res.locals.isAuthenticated = true;
 
     next();
   } catch (err) {
-    // 'TODO: Error handling'
+    // const error = getErrorMsg(err)
     res.clearCookie("auth");
     res.redirect("/auth/login");
   }
 }
 
-
 export function isAuth(req, res, next) {
-    if (!req.user) {
-        return res.redirect('auth/login')
-    }
+  if (!req.user) {
+    return res.redirect("auth/login");
+  }
 
-    next();
+  next();
 }
