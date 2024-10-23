@@ -6,7 +6,7 @@ const volcanoSchema = new Schema({
     required: true,
   },
   location: {
-    type: Number,
+    type: String,
     required: true,
   },
   elevation: {
@@ -14,7 +14,7 @@ const volcanoSchema = new Schema({
     required: true,
   },
   lastEruption: {
-    type: String,
+    type: Number,
     required: true,
   },
   image: {
