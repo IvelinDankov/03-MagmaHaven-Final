@@ -14,10 +14,7 @@
             <input type="text" id="image" name="image" placeholder="http://..." value="{{volcano.image}}">
             <label>Volcano Type:</label>
             <select id="type" name="typeVolcano">
-                {{#each volcanoTypes}}
-                <option value="{{value}}" {{selected}}>{{label}}</option>
-
-                {{/each}}
+              {{>volcanoTypeSelect}}
             </select>
             <label>Description:</label>
             <textarea id="description" name="description" placeholder="..." >{{volcano.description}}</textarea>
