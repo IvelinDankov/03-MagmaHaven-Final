@@ -32,3 +32,11 @@ export function isAuth(req, res, next) {
 
   next();
 }
+
+export function isGuest(req, res, next)  {
+  if (req.user) {
+    return res.redirect("/404");
+  }
+
+  next();
+}

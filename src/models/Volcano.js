@@ -4,22 +4,28 @@ const volcanoSchema = new Schema({
   name: {
     type: String,
     required: true,
+    minLength: 2,
   },
   location: {
     type: String,
     required: true,
+    minLength: 3,
   },
   elevation: {
     type: Number,
     required: true,
+    min: 0,
   },
   lastEruption: {
     type: Number,
     required: true,
+    min: 0,
+    max: 2024,
   },
   image: {
     type: String,
     required: true,
+    validate: /^https?:\/\//,
   },
   typeVolcano: {
     type: String,
@@ -36,6 +42,7 @@ const volcanoSchema = new Schema({
   description: {
     type: String,
     required: true,
+    minLength: 10,
   },
   voteList: [
     {
