@@ -1,6 +1,7 @@
 import { Router } from "express";
 import volcanoService from "../services/volcanoService.js";
 import { getErrorMsg } from "../utils/errorUtil.js";
+import { isAuth } from "../middlewares/authMiddleware.js";
 
 const router = Router();
 
@@ -16,7 +17,7 @@ router.get("/catalog", async (req, res) => {
 ########### CREATE
 ############################# */
 
-router.get("/create", (req, res) => {
+router.get("/create", isAuth, (req, res) => {
   const volcanoDataType = getVolcanoTypeViewData({});
   res.render("volcano/create", {
     title: "Edit Page",
@@ -24,7 +25,7 @@ router.get("/create", (req, res) => {
   });
 });
 
-router.post("/create", async (req, res) => {
+router.post("/create", isAuth, async (req, res) => {
   const volcanoData = req.body;
   const userId = req.user._id;
 
@@ -67,12 +68,21 @@ router.get("/:volcanoId/details", async (req, res) => {
 ########### VOTE
 ############################# */
 
-router.get("/:volcanoId/vote", async (req, res) => {
+router.get("/:volcanoId/vote", isAuth, async (req, res) => {
   const volcanoId = req.params.volcanoId;
   const userId = req.user._id;
+  
+
+
+  const isOwner = volcanoOwner(volcanoId, userId);
+  
+  if (isOwner) {
+   return  res.redirect('/404');
+  }
 
   try {
     await volcanoService.vote(volcanoId, userId);
+
 
     return res.redirect(`/volcano/${volcanoId}/details`);
   } catch (err) {
@@ -85,9 +95,16 @@ router.get("/:volcanoId/vote", async (req, res) => {
 ########### DELETE
 ############################# */
 
-router.get("/:volcanoId/delete", async (req, res) => {
+router.get("/:volcanoId/delete", isAuth, async (req, res) => {
   const volcanoId = req.params.volcanoId;
+  const userId = req.user._id;
   await volcanoService.remove(volcanoId);
+
+  const isOwner = volcanoOwner(volcanoId, userId);
+
+  if (!isOwner) {
+    return res.redirect('/404');
+  }
 
   res.redirect("/volcano/catalog");
 });
@@ -96,10 +113,17 @@ router.get("/:volcanoId/delete", async (req, res) => {
 ########### EDIT
 ############################# */
 
-router.get("/:volcanoId/edit", async (req, res) => {
+router.get("/:volcanoId/edit", isAuth, async (req, res) => {
   const volcanoId = req.params.volcanoId;
+  const userId = req.user._id;
   const volcano = await volcanoService.getOne(volcanoId).lean();
   const volcanoDataType = getVolcanoTypeViewData(volcano);
+
+  const isOwner = volcanoOwner(volcanoId, userId);
+
+  if (!isOwner) {
+    return res.redirect('/404');
+  }
 
   res.render("volcano/edit", {
     title: "Edit Page",
@@ -108,9 +132,18 @@ router.get("/:volcanoId/edit", async (req, res) => {
   });
 });
 
-router.post("/:volcanoId/edit", async (req, res) => {
+router.post("/:volcanoId/edit", isAuth, async (req, res) => {
+  const userId = req.user._id;
   const volcanoId = req.params.volcanoId;
   const volcanoData = req.body;
+
+  
+  const isOwner = volcanoOwner(volcanoId, userId);
+
+  if (!isOwner) {
+    return res.redirect("/404");
+  }
+
 
   try {
     await volcanoService.edit(volcanoId, volcanoData);
@@ -118,13 +151,26 @@ router.post("/:volcanoId/edit", async (req, res) => {
     res.redirect(`/volcano/${volcanoId}/details`);
   } catch (err) {
     const error = getErrorMsg(err);
+    const volcanoDataType = getVolcanoTypeViewData(volcanoData);
     res.render("volcano/edit", {
       title: "Edit Page",
       volcano: volcanoData,
+      volcanoTypes: volcanoDataType,
       error,
     });
   }
 });
+
+/* ############################
+########### HELPERs
+############################# */
+async function volcanoOwner(volcanoId, userId) {
+  const volcano = await volcanoService.getOne(volcanoId);
+  const isOwner = volcano.owner.toString() === userId;
+
+  return isOwner;
+}
+
 
 // FIXME: This is function for options and.
 function getVolcanoTypeViewData({ typeVolcano }) {

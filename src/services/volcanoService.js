@@ -21,7 +21,7 @@ const remove = (volcanoId) => {
 }
 
 const edit = (volcanoId, data) => {
-  return Volcano.findByIdAndUpdate(volcanoId, data);
+  return Volcano.findByIdAndUpdate(volcanoId, data, {runValidators: true});
 }
 
 export default {
